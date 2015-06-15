@@ -1,4 +1,6 @@
 # coding: UTF-8
+from bs4 import BeautifulSoup
+
 __author__ = 'wen'
 
 import urllib2
@@ -14,23 +16,27 @@ class Spider_Model:
     def GetPage(self,page):
         myUrl='http://www.qiushibaike.com/text/page/'+page+'?s=4780945'
         req = urllib2.Request(myUrl,headers={
-    'Connection': 'Keep-Alive',
-    'Accept': 'text/html, application/xhtml+xml, */*',
-    'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko'
-})
+        'Connection': 'Keep-Alive',
+        'Accept': 'text/html, application/xhtml+xml, */*',
+        'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko'
+        })
         myRespons=urllib2.urlopen(req)
 
         myPage = myRespons.read()
-        unicodePage=myPage.decode('utf-8')
-
-        myItems = re.findall('<div class="content".*?</div>',unicodePage,re.S)
-        items = []
-        for item in myItems:
-            item.replace('<div class="content">', '')
-            item.replace('/div>','')
-            items.append(item)
-        return items
+        soup = BeautifulSoup(myPage, from_encoding="utf8")
+        items = soup.find_all(attrs={"class": "article block untagged mb15"})
+        contentlist=[]
+        for item in items:
+            stats = item.find_all('div',class_="stats")
+            vote = stats[0].find_all('span',class_="stats-vote")
+            votenums = vote[0].find_all('i',class_="number")
+            votenum = votenums[0].string
+            if int(votenum)>1000:
+                print "voteNumber="+votenum
+                contents= item.find_all('div',class_="content")[0].stripped_strings
+                contentlist.append(contents)
+        return contentlist
 
     def LoadPage(self):
         while self.enable:
@@ -46,7 +52,11 @@ class Spider_Model:
 
     def ShowPage(self,nowPage,page):
         for items in nowPage:
-            print u'第%d页' %page , items
+            print u'第%d页' %page
+            for contents in items:
+                for content in contents:
+
+                    print content
             myInput = raw_input()
             if myInput =="quit":
                 self.enable = False
