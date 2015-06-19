@@ -33,7 +33,7 @@ class Spider_Model:
             votenums = vote[0].find_all('i',class_="number")
             votenum = votenums[0].string
             if int(votenum)>1000:
-                print "voteNumber="+votenum
+                #print "voteNumber="+votenum
                 contents= item.find_all('div',class_="content")[0].stripped_strings
                 contentlist.append(contents)
         return contentlist
@@ -54,9 +54,7 @@ class Spider_Model:
         for items in nowPage:
             print u'第%d页' %page
             for contents in items:
-                for content in contents:
-
-                    print content
+                    print contents
             myInput = raw_input()
             if myInput =="quit":
                 self.enable = False
