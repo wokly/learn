@@ -1,0 +1,5 @@
+//*[@id="picture"]/p/img[1]
+//*[@id="picture"]/p/img[2]
+
+<img alt="清纯女生陈柔希，第1张" src="http://pic.meizitu.com/wp-content/uploads/2015a/08/23/01.jpg">
+//*[@id='picture']/p/img/@src
